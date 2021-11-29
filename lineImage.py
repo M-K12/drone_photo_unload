@@ -92,8 +92,7 @@ if __name__ == '__main__':
             imgfiles.append(os.path.join(root, file))
 
     kmljson = mysql.getlines_json(flyDate)
-    imgfiles = imgfiles[:5]
-    # mysql.close()
+    # imgfiles = imgfiles[:5]
     # kfile = r'D:\uav\airlines\1116.json'
     # pcount, rcount, kPoints = linePoints(kfile)
     pcount, rcount, kPoints = getlines(kmljson)
@@ -138,13 +137,11 @@ if __name__ == '__main__':
 
     for res in p_list:
         res.join()
-    up_status(total_count, len(verfiedImgs), len(validImgs), len(invalidImgs), len(repeatPoints))
-    time.sleep(3)
 
     validImgCnt = len(validImgs)
     invalidImgCnt = len(invalidImgs)
     repeatCnt = len(repeatPoints)
-    pointCnt = len(matchedImgsPoints)
+    pointOkCnt = len(matchedImgsPoints)
 
     matchedHousesImgs = matchedImgsPoints.copy()
     for k in list(matchedHousesImgs):
@@ -159,9 +156,9 @@ if __name__ == '__main__':
     print(
         f"所有航线航点总数:{pcount} 重复航点:{rcount} 去重后航点数:{kPointscnt} "
         f"照片总数:{len(imgfiles)} 有效照片:{validImgCnt} 无效照片:{invalidImgCnt} "
-        f"航点关联成功:{pointCnt} 重复照片:{repeatCnt}  "
+        f"航点关联成功:{pointOkCnt} 重复照片:{repeatCnt}  "
         f"房屋关联成功:{houseCnt}")
 
     m, s = divmod(int(time.time() - start), 60)
     print(f"timecost:{m}分{s}秒")
-    sg.popup("上传完成", f"关联成功:{validImgCnt} \n无效照片:{invalidImgCnt} \n重复照片:{repeatCnt} \ntimecost:{m}分{s}秒")
+    sg.popup("上传完成", f"关联成功:{pointOkCnt} \n无效照片:{invalidImgCnt} \n重复照片:{repeatCnt} \ntimecost:{m}分{s}秒")

@@ -17,7 +17,10 @@ def getlines(kjson):
             lat = float(point['lat'])
             lon = float(point['lon'])
             fid = int(point['id'])
-            match = point['match']
+            try:
+                match = point['match']
+            except KeyError:
+                match = []
             if fid in kpoints:
                 # print("重复航点:", id)
                 rCount += 1
