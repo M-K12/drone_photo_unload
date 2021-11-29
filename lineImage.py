@@ -8,8 +8,8 @@ import time
 from utils.tools import getLatLon, md5value, photoCrop, getlines
 from utils.ftpDL import myftp
 from utils.mysqlDL import mysql
+from utils.sgwindow import input_messages, up_status
 import os
-from client import input_messages, up_status
 
 ftp = myftp()
 ftp_msg = ftp.login()
