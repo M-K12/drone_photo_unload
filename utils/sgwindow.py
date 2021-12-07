@@ -7,7 +7,9 @@ def input_messages():
     flyDate = format(time.strftime("%Y-%m-%d", time.localtime()))
     errmsg = ''
     while True:
-        layout = [[sg.Text('航线日期', justification='right'),
+        layout = [[sg.Text('飞行账户', justification='right'),
+                   sg.In(key='user')],
+                  [sg.Text('航线日期', justification='right'),
                    sg.In(flyDate, key="Date"),
                    sg.CalendarButton(button_text="选择日期", size=(15, 1), target='Date', format='%Y-%m-%d')],
                   [sg.Text('照片路径', justification='right'),
@@ -24,6 +26,7 @@ def input_messages():
         if event != '开始上传':  # 如果用户关闭窗口或点击`Cancel`
             exit()
 
+        flyUser = values['user']
         flyDate = values['Date']
         photoFolder = values['Folder']
 
@@ -36,10 +39,11 @@ def input_messages():
 
     window.close()
 
+    print('User:', flyUser)
     print('Date:', flyDate)
     print('Folder:', photoFolder)
 
-    return flyDate, photoFolder
+    return flyUser, flyDate, photoFolder
 
 
 def up_status(Tcount, vfImgCnt, validImgCnt, invalidImgCnt, repeatCnt):

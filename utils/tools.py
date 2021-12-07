@@ -31,11 +31,11 @@ def getlines(kjson):
     return pCount, rCount, kpoints
 
 
-def getLatLon(tags):
+def getPhotoInfo(tags):
     try:
         lat_ = tags['GPS GPSLatitude'].printable[1:-1].replace(" ", "").replace("/", ",").split(",")
         lon_ = tags['GPS GPSLongitude'].printable[1:-1].replace(" ", "").replace("/", ",").split(",")
-        # creattime = tags['Image DateTime'].printable.replace(":", "").replace(" ", "")
+        shoottime = tags['Image DateTime'].printable#.replace(":", "").replace(" ", "")
         # thumbnail = tags['JPEGThumbnail']
         if len(lat_) != 4 or len(lon_) != 4:
             return None
@@ -46,7 +46,7 @@ def getLatLon(tags):
         if tags['GPS GPSLongitudeRef'].printable != "E":
             lon *= (-1)
         LatLon = (lat, lon)
-        return LatLon
+        return LatLon, shoottime
 
 
     except:
@@ -78,10 +78,10 @@ if __name__ == '__main__':
     from glob import glob
 
     # imgs = glob(r"D:\uav\pictures\1114\2\*.JPG")
-    imgs = ["../images/DJI_0002.JPG", "../images/1.jpg"]
+    imgs = [r"E:\projects\DJI\drone_photo_unload\images\DJI_0002.JPG"]
     for img in imgs:
         # img = r'D:\uav\pictures\1114\2\DJI_0004.JPG'
         with open(img, 'rb') as fb:
             tags = exifread.process_file(fb)
-        latlon = getLatLon(tags)
-        print(latlon)
+        latlon, shoottime = getPhotoInfo(tags)
+        print(latlon, shoottime)

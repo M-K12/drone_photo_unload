@@ -12,7 +12,7 @@ import traceback
 class myftp:
     def __init__(self, ip="192.168.2.18", user='gym', passwd='gym123qaz', port=21):
         self.ftp = FTP()
-        self.ftp.set_debuglevel(2)  # 打开调试级别2，显示详细信息;0为关闭调试信息
+        self.ftp.set_debuglevel(0)  # 打开调试级别2，显示详细信息;0为关闭调试信息
         self.ip = ip
         self.user = user
         self.passwd = passwd
@@ -43,7 +43,15 @@ class myftp:
             except:
                 print("wrong")
 
-        self.ftp.storbinary("STOR " + fname, file_handler, self.bufsize)  # 上传文件
+        for i in range(5):
+            try:
+                self.ftp.storbinary("STOR " + fname, file_handler, self.bufsize)  # 上传文件
+                break
+            except:
+                self.login()
+                time.sleep(1)
+            print(f"{filepath}上传失败")
+
         self.ftp.set_debuglevel(0)
         file_handler.close()
 

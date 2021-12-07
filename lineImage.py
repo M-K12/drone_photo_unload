@@ -5,7 +5,7 @@ import PySimpleGUI as sg
 import numpy as np
 import exifread
 import time
-from utils.tools import getLatLon, md5value, photoCrop, getlines
+from utils.tools import getPhotoInfo, md5value, photoCrop, getlines
 from utils.ftpDL import myftp
 from utils.mysqlDL import mysql
 from utils.sgwindow import input_messages, up_status
@@ -18,7 +18,7 @@ if ftp_msg is not None and ftp_msg.find('ERROR'):
     exit()
 
 mysql = mysql()
-sql_msg = mysql.connect('ming')
+sql_msg = mysql.connect('drais_data')
 if sql_msg is not None and sql_msg.find('ERROR'):
     sg.popup(sql_msg + "\nERROR:数据库网络连接异常！", title="Mysql Error", keep_on_top=True)
     exit()
@@ -31,7 +31,7 @@ def photo_match(imgs, verfiedImgs, kPoints, pKeys, validImgs, repeatPoints, inva
 
         fb = open(img, 'rb')
         tags = exifread.process_file(fb)
-        latlon = getLatLon(tags)
+        latlon, shoottime = getPhotoInfo(tags)
 
         if latlon is None:
             invalidImgs[img] = 'None'
@@ -72,15 +72,16 @@ def photo_match(imgs, verfiedImgs, kPoints, pKeys, validImgs, repeatPoints, inva
 
         else:
             invalidImgs[img] = 'None'
-            print(f"{img} 是无效照片, 关联到的最近航点是 {pKeys[pdata.argmin()]},距离:{pdata.min()}")
+            print(f"{img} 是无效照片,拍摄时间:{shoottime} 关联到的最近航点是 {pKeys[pdata.argmin()]},距离:{pdata.min()}")
 
         fb.close()
+    # 上传完成，关闭ftp连接
     ftp.quit()
 
 
 if __name__ == '__main__':
 
-    flyDate, photoFolder = input_messages()
+    flyUser, flyDate, photoFolder = input_messages()
 
     start = time.time()
 
@@ -91,7 +92,7 @@ if __name__ == '__main__':
                 continue
             imgfiles.append(os.path.join(root, file))
 
-    kmljson = mysql.getlines_json(flyDate)
+    kmljson = mysql.getlines_json(user=flyUser, date=flyDate)
     # imgfiles = imgfiles[:5]
     # kfile = r'D:\uav\airlines\1116.json'
     # pcount, rcount, kPoints = linePoints(kfile)
@@ -108,7 +109,7 @@ if __name__ == '__main__':
     # imgfiles = [r'D:\uav\pictures\1116\31\DJI_0811.JPG']
     # pKeys = ['3304211052070807']
 
-    cpuCount = cpu_count() if len(imgfiles) > 100 else 1
+    cpuCount = min(cpu_count(), len(imgfiles) // 2)
 
     manager = Manager()
     total_count = len(imgfiles)

@@ -40,12 +40,12 @@ class mysql:
         self.cursor.close()
         self.conn.close()
 
-    def getlines_json(self, flydate):
+    def getlines_json(self, user, date):
         # 查询航线
         kcodes = [
-            f"SELECT id, source FROM t_uav_trajectory WHERE del_flag=0 AND file_id in (SELECT id FROM t_uav_file_info "
-            f"WHERE DATE_FORMAT( create_time, '%Y-%m-%d' ) = '{(flydate)}' AND is_download = 1) ORDER BY file_id;"]
-        self.connect(db="ming")
+            f"SELECT id, source FROM t_uav_trajectory WHERE create_user='{user}' AND file_id in (SELECT id FROM t_uav_file_info "
+            f"WHERE DATE_FORMAT( create_time, '%Y-%m-%d' ) = '{date}' AND is_download = 1) ORDER BY file_id;"]
+        self.connect(db="drais_data")
         kmljson = self.my_select(kcodes)[0]
         self.close()
         return kmljson
@@ -63,7 +63,7 @@ class mysql:
 
     def insert_data(self, existed_photos, matchedHousesImgs):
 
-        self.connect(db="ming")
+        self.connect(db="drais_house_jiashan")
         auto_increment, existedHidImgs = self.get_existed_photos(existed_photos)
         valuesList = []
         for fid in matchedHousesImgs:
